@@ -10,66 +10,85 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
+import java.util.List;
+
 
 public class Main {
+	
+	/// ce sont les clés de mon appli twitter
+	private String CONSUMER_KEY = "7fXNP4Mp9OAVSGRsXnJJ5fzsS";
+	private String CONSUMER_SECRET = "GOFU***********";
+	
+	// et ici il faut indiquer vos clés d'autorisation, que vous aurez généré par le-moyen-que-vous-savez (et si vous savez pas TANT PIS)
+	private String ACCESS_TOKEN = "";
+	private String ACCESS_TOKEN_SECRET = "";
 
-    public static void main(String args[])
-    {
-        try
-        {
-            // The factory instance is re-useable and thread safe.
-            Twitter twitter = new TwitterFactory().getInstance();
-            twitter.setOAuthConsumer("pESR4xRk4glcGKMCryvdMQ", "ddu3r7IRp0I1luSFOW2iLwKP5pYTY03AZrAjJAVaj8");
+	public static void main(String args[])
+	{
+		new Main();
+	}
 
-            RequestToken requestToken = twitter.getOAuthRequestToken();
-            AccessToken accessToken = null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            while (null == accessToken)
-            {
-                System.out.println("Open the following URL and grant access to your account:");
-                System.out.println(requestToken.getAuthorizationURL());
-                System.out.print("Enter the PIN(if aviailable) or just hit enter.[PIN]:");
-                String pin = null;
-                try
-                {
-                    pin = br.readLine();
-                } catch (IOException ex)
-                {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try
-                {
-                    if (pin.length() > 0)
-                    {
-                        accessToken = twitter.getOAuthAccessToken(requestToken, pin);
-                    } else
-                    {
-                        accessToken = twitter.getOAuthAccessToken();
-                    }
-                } catch (TwitterException te)
-                {
-                    if (401 == te.getStatusCode())
-                    {
-                        System.out.println("Unable to get the access token.");
-                    } else
-                    {
-                        te.printStackTrace();
-                    }
-                }
-            }
-            //persist to the accessToken for future reference.
-            storeAccessToken(twitter.verifyCredentials(), accessToken);
-            Status status = twitter.updateStatus(args[0]);
-            System.out.println("Successfully updated the status to [" + status.getText() + "].");
-            System.exit(0);
-        } catch (TwitterException ex)
-        {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+	Main(){
+		try
+		{
+			ConfigurationBuilder cb = new ConfigurationBuilder();
+			cb.setDebugEnabled(true)
+			  .setOAuthConsumerKey(CONSUMER_KEY)
+			  .setOAuthConsumerSecret(CONSUMER_SECRET)
+			  .setOAuthAccessToken(ACCESS_TOKEN)
+			  .setOAuthAccessTokenSecret(ACCESS_TOKEN_SECRET);
+			  
+			TwitterFactory tf = new TwitterFactory(cb.build());
+			Twitter twitter = tf.getInstance();
 
-    private static void storeAccessToken(User user, AccessToken accessToken)
-    {
-        System.out.println(user.getScreenName());
-    }
+			//////get the whole tweetline and print it
+			//
+			//
+			/*
+			List<Status> statuses = twitter.getHomeTimeline();
+			System.out.println("Showing home timeline.");
+			for (Status status : statuses) {
+				System.out.println(status.getUser().getName() + ":" +
+				status.getText());
+			}
+			*/
+			//
+			//////
+			
+			
+			//////////// print some user infos 
+			//
+			//
+			User fox = twitter.showUser("whitefox_dev");
+			System.out.println("Creation date : " + fox.getCreatedAt());
+			System.out.println("Bio : " + fox.getDescription());
+			System.out.println("Nb de followers : " + fox.getFollowersCount());
+			System.out.println("Nb d'amis : " + fox.getFriendsCount());
+			System.out.println("ID : " + fox.getId());
+			System.out.println("Langue : " + fox.getLang());
+			System.out.println("Location : " + fox.getLocation());
+			System.out.println("Nom : " + fox.getName());
+			System.out.println("URL d'avatar : " + fox.getProfileImageURL());
+			System.out.println("Screen name : " + fox.getScreenName());
+			System.out.println("Status : " + fox.getStatus());
+			System.out.println("Nb statut : " + fox.getStatusesCount());
+			System.out.println("Fuseau horaire : " + fox.getTimeZone());
+			System.out.println("URL : " + fox.getURL());
+			System.out.println("UTC Offset : " + fox.getUtcOffset());
+			System.out.println("GeoEnabled? : " + fox.isGeoEnabled());
+
+			
+			//
+			/////
+			
+			
+			
+			
+
+		} catch (TwitterException ex){
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+		}
+}
+	
 }
